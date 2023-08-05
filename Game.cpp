@@ -20,7 +20,7 @@ void Game::Reset()
 	ResetBall();
 
 	// TODO #2 - Add this brick and 4 more bricks to the vector
-
+    for (int i = 0, x = 5; i < 5; i++, x += 15)
 	
 	brick.width = 10;
 	brick.height = 2;
@@ -28,7 +28,7 @@ void Game::Reset()
 	brick.y_position = 5;
 	brick.doubleThick = true;
 	brick.color = ConsoleColor::DarkGreen;
-	
+    bricks.push_back(brick);
 
 	/*Box brick1;
 	brick1.width = 10;
@@ -65,11 +65,11 @@ void Game::Reset()
 	brick4.doubleThick = true;
 	brick4.color = ConsoleColor::DarkGreen;
 	bricks.push_back(brick4);*/
-	for (int i = 0; i < 5; i++)
-	{
-		brick.x_position = i * 15;
-		bricks.push_back(brick);
-	}
+	//for (int i = 0; i < 5; i++)
+	//{
+		//brick.x_position = i * 15;
+		//bricks.push_back(brick);
+	//}
 }
 
 void Game::ResetBall()
@@ -114,16 +114,28 @@ void Game::Render() const
 	ball.Draw();
 
 	// TODO #3 - Update render to render all bricks
-	for (int i = 0; i < bricks.size(); i++)
-	{
-		bricks[i].Draw();
-	}
-	if (ball.y_position == WINDOW_HEIGHT)
-	{
 
-		Console::SetCursorPosition(5, 5);
-		std::cout << "YOU LOSE! Press R to reset";
-	}
+    for (int i = 0; i < bricks.size(); i++)
+    {
+        bricks[i].Draw();
+    }
+    Console::Lock(false);
+
+    Console::SetCursorPosition(20, 20);
+    Console::ForegroundColor(White);
+    printf("Press Space to begin or pause the game.");
+    Console::CursorVisible(false);
+
+	//for (int i = 0; i < bricks.size(); i++)
+	//{
+		//bricks[i].Draw();
+//	}
+	//if (ball.y_position == WINDOW_HEIGHT)
+	//{
+
+		//Console::SetCursorPosition(5, 5);
+		//std::cout << "YOU LOSE! Press R to reset";
+	//}
 
 
 
@@ -138,7 +150,7 @@ void Game::Render() const
 void Game::CheckCollision()
 {
 	// TODO #4 - Update collision to check all bricks
-
+    int size = bricks.size();
 	for (int i = 0; i < bricks.size(); i++)
 	{
 		if (bricks[i].Contains(ball.x_position + ball.x_velocity, ball.y_position + ball.y_velocity))
@@ -151,12 +163,33 @@ void Game::CheckCollision()
 			{
 				bricks.erase(bricks.begin() + i);
 				i--;
+                size--;
 			}
 
 		}
 	}
 	// TODO #6 - If no bricks remain, pause ball and display victory text with R to reset
-	if (bricks.empty() == true)
+
+    if (size == 0)
+    {
+        Console::SetCursorPosition(20, 20);
+        Console::ForegroundColor(White);
+        printf("     You win! Type R to play again.    ");
+        char response;
+        cin >> response;
+        if (tolower(response) == tolower('R'))
+        {
+            Reset();
+        }
+    }
+    if (paddle.Contains(ball.x_position + ball.x_velocity, ball.y_velocity + ball.y_position))
+    {
+        ball.y_velocity *= -1;
+    }
+
+    //continue;
+
+	/*if (bricks.empty() == true)
 	{
 		ball.moving = false;
 		std::cout << "You Win! (Press 'R' to reset the game.)";
@@ -165,7 +198,7 @@ void Game::CheckCollision()
 	if (paddle.Contains(ball.x_position + ball.x_velocity, ball.y_velocity + ball.y_position))
 	{
 		ball.y_velocity *= -1;
-	}
+	}*\
 
 
 
@@ -177,13 +210,30 @@ void Game::CheckCollision()
 
 
 	// TODO #7 - If ball touches bottom of window, pause ball and display defeat text with R to reset
+    if (ball.y_position >= WINDOW_HEIGHT)
+    {
+        Console::SetCursorPosition(20, 20);
+        Console::ForegroundColor(White);
+        printf("     You lose. Type R to play again.   ");
+        char response;
+        cin >> response;
+        if (tolower(response) == tolower('R'))
+        {
+            for (int x = 0; x < bricks.size(); x++)
+            {
+                bricks.erase(bricks.begin() + x); //delete remaining bricks
+            }
+            bricks.clear();
+            Reset();
+        }
+    }
 
-	if (ball.y_position == WINDOW_HEIGHT)
-	{
-		ball.moving = false;
-		Console::SetCursorPosition(5, 5);
-		std::cout << "YOU LOSE! Press R to reset";
-	}
+	// if (ball.y_position == WINDOW_HEIGHT)
+	// {
+	//	ball.moving = false;
+		//Console::SetCursorPosition(5, 5);
+		//std::cout << "YOU LOSE! Press R to reset";
+	//}*\
 	
 
 
