@@ -20,56 +20,18 @@ void Game::Reset()
 	ResetBall();
 
 	// TODO #2 - Add this brick and 4 more bricks to the vector
-    for (int i = 0, x = 5; i < 5; i++, x += 15)
-	
-	brick.width = 10;
-	brick.height = 2;
-	brick.x_position = 5;
-	brick.y_position = 5;
-	brick.doubleThick = true;
-	brick.color = ConsoleColor::DarkGreen;
-    bricks.push_back(brick);
+    for (int i = 0; i < 5; ++i)
+    {
+        brick.width = 10;
+        brick.height = 2;
+        brick.x_position = i * (Console::WindowWidth() / 5);
+        brick.y_position = 10;
+        brick.doubleThick = true;
+        brick.color = ConsoleColor::DarkGreen;
+        bricks.push_back(brick);
+    }
 
-	/*Box brick1;
-	brick1.width = 10;
-	brick1.height = 2;
-	brick1.x_position = 20;
-	brick1.y_position = 5;
-	brick1.doubleThick = true;
-	brick1.color = ConsoleColor::DarkGreen;
-	bricks.push_back(brick1);
 
-	Box brick2;
-	brick2.width = 10;
-	brick2.height = 2;
-	brick2.x_position = 30;
-	brick2.y_position = 5;
-	brick2.doubleThick = true;
-	brick2.color = ConsoleColor::DarkGreen;
-	bricks.push_back(brick2);
-
-	Box brick3;
-	brick3.width = 10;
-	brick3.height = 2;
-	brick3.x_position = 40;
-	brick3.y_position = 5;
-	brick3.doubleThick = true;
-	brick3.color = ConsoleColor::DarkGreen;
-	bricks.push_back(brick3);
-
-	Box brick4;
-	brick4.width = 10;
-	brick4.height = 2;
-	brick4.x_position = 50;
-	brick4.y_position = 5;
-	brick4.doubleThick = true;
-	brick4.color = ConsoleColor::DarkGreen;
-	bricks.push_back(brick4);*/
-	//for (int i = 0; i < 5; i++)
-	//{
-		//brick.x_position = i * 15;
-		//bricks.push_back(brick);
-	//}
 }
 
 void Game::ResetBall()
@@ -106,45 +68,31 @@ bool Game::Update()
 //  All rendering should be done between the locks in this function
 void Game::Render() const
 {
-	Console::Lock(true);
-	Console::Clear();
+    Console::Lock(true);
+    Console::Clear();
 
-	
-	paddle.Draw();
-	ball.Draw();
+    paddle.Draw();
+    ball.Draw();
 
-	// TODO #3 - Update render to render all bricks
+    if (bricks.size() == 0)
+    {
+        Console::SetCursorPosition(ball.x_position, ball.y_position);
+        std::cout << " You Win push 'r' to reset";
+    }
 
-    for (int i = 0; i < bricks.size(); i++)
+    if (paddle.y_position + 5 == ball.y_position)
+    {
+        Console::SetCursorPosition(20, ball.y_position - 20);
+        std::cout << " You Lose push 'r' to reset";
+    }
+    // TODO #3 - Update render to render all bricks
+
+    for (int i = 0; i < bricks.size(); ++i)
     {
         bricks[i].Draw();
     }
+
     Console::Lock(false);
-
-    Console::SetCursorPosition(20, 20);
-    Console::ForegroundColor(White);
-    printf("Press Space to begin or pause the game.");
-    Console::CursorVisible(false);
-
-	//for (int i = 0; i < bricks.size(); i++)
-	//{
-		//bricks[i].Draw();
-//	}
-	//if (ball.y_position == WINDOW_HEIGHT)
-	//{
-
-		//Console::SetCursorPosition(5, 5);
-		//std::cout << "YOU LOSE! Press R to reset";
-	//}
-
-
-
-	Console::Lock(false);
-
-	/*Console::SetCursorPosition(20, 20);
-	Console::ForegroundColor(White);
-	printf("Press Space to begin or pause the game. ");
-	Console::CursorVisible(false);*/
 }
 
 void Game::CheckCollision()
@@ -227,6 +175,7 @@ void Game::CheckCollision()
             Reset();
         }
     }
+   
 
 	// if (ball.y_position == WINDOW_HEIGHT)
 	// {
